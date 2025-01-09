@@ -1,66 +1,53 @@
-## Foundry
+# MultiSig Wallet
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Un portefeuille multi-signatures permettant la gestion collective des fonds et des transactions.
 
-Foundry consists of:
+## Prérequis
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+- [Foundry](https://book.getfoundry.sh/getting-started/installation)
+- [Node.js](https://nodejs.org/)
 
-## Documentation
+## Installation
 
-https://book.getfoundry.sh/
+```bash
+git clone https://github.com/Julien-epi/S1-Solidity-multisig
+cd multisig-wallet
+forge install
 
-## Usage
+# Lancer le serveur de développement
+anvil
 
-### Build
+# Dans un nouveau terminal, lancer les tests:
 
-```shell
-$ forge build
-```
+forge test ou avec "-vvv" pour plus de détails
 
-### Test
+# Vérifier la couverture des tests:
+forge coverage
 
-```shell
-$ forge test
-```
+cp .env.example .env
 
-### Format
+# Déployer sur anvil:
 
-```shell
-$ forge fmt
-```
+forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
 
-### Gas Snapshots
+# CMD : 
 
-```shell
-$ forge snapshot
-```
+# Creer 3 nvx wallets avec : 
+cast wallet new
 
-### Anvil
+# Remplacer CONTRACT_ADDRESS par l'adresse de déploiement
 
-```shell
-$ anvil
-```
+# Vérifier les signataires
+cast call CONTRACT_ADDRESS "getSigners()" --rpc-url http://localhost:8545
 
-### Deploy
+# Soumettre une transaction (depuis USER1)
+cast send CONTRACT_ADDRESS "submitTransaction(address,uint256,bytes)" RECIPIENT_ADDRESS 1000000000000000000 0x --rpc-url http://localhost:8545 --private-key PRIVATE_KEY_USER1
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+# Confirmer une transaction (USER2)
+cast send CONTRACT_ADDRESS "confirmTransaction(uint256)" 0 --rpc-url http://localhost:8545 --private-key PRIVATE_KEY_USER2
 
-### Cast
+# Vérifier une transaction
+cast call CONTRACT_ADDRESS "getTransaction(uint256)" 0 --rpc-url http://localhost:8545
 
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+# Vérifier le nombre de signataires
+cast call CONTRACT_ADDRESS "getSignerCount()" --rpc-url http://localhost:8545
